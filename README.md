@@ -27,3 +27,4 @@ g++ socket_client2.cpp -o socket_client2 -lws2_32
 ./socket_client2
 ```
 ### 3. You can enter text client and client2 then text will show on server
+![image](https://github.com/user-attachments/assets/2f22633c-8748-4761-89ed-8594ae662965)
