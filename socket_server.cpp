@@ -63,25 +63,40 @@ int main()
 
 DWORD WINAPI ThreadFun(LPVOID lpThreadParameter)
 {
+    SOCKET c = (SOCKET)lpThreadParameter;
 
-	SOCKET c = (SOCKET)lpThreadParameter;
+    cout << c << " is connected!" << endl;
 
-	cout  << c << "is conneted!" << endl;
+    char buf[100] = { 0 };
+    sprintf(buf, "Welcome %d to the chat room!", c);
+    send(c, buf, strlen(buf) + 1, 0);
 
-	char buf[100] = { 0 };
-	sprintf(buf, "Welcome %d to the chat room!", c);
-	send(c, buf, 100, 0);
+    char messageBuffer[1024] = { 0 };
+    int ret;
 
-	int ret;
-	do
-	{
-		char buf2[100] = { 0 };
-		ret = recv(c, buf2, 100, 0);
-		cout << c << " say:" << buf2 << endl;
+    do
+    {
+        char buf2[1024] = { 0 };
+        ret = recv(c, buf2, sizeof(buf2) - 1, 0);
+        if (ret > 0)
+        {
+            buf2[ret] = '\0';
+            strcat(messageBuffer, buf2);
 
-	} while (ret != SOCKET_ERROR && ret != 0);
+            char *ptr = strtok(messageBuffer, "\n");
+            while (ptr != NULL)
+            {
+                cout << c << " says: " << ptr << endl;
+                ptr = strtok(NULL, "\n");
+            }
 
-	cout << c << "left the chat room!";
+            strcpy(messageBuffer, "");
+        }
 
-	return 0;
+    } while (ret != SOCKET_ERROR && ret != 0);
+
+    cout << c << " left the chat room!" << endl;
+
+    return 0;
 }
+
